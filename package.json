@@ -54,7 +54,7 @@
     "moment": "^2.24.0",
     "semver": "^7.3.2",
     "tree-kill": "file:third_party/tree-kill",
-    "vscode-debugadapter": "^1.44.0",
+    "vscode-debugadapter": "^1.48.0",
     "vscode-debugadapter-testsupport": "^1.44.0",
     "vscode-debugprotocol": "^1.44.0",
     "vscode-languageclient": "^7.0.0",
