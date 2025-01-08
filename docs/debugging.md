@@ -19,7 +19,7 @@ adapter in favor of direct communication with Delve via
  📣 **We are happy to announce that the new _`dlv-dap`_ mode of Delve
  integration is enabled for _local_ _debugging_ by default. For
  [_remote_ _debugging_](#remote-debugging) it is the default in
- [Go Nightly](nightly.md) and is available with stable builds on demand with
+ [pre-release versions](https://github.com/golang/vscode-go/blob/master/README.md#pre-release-version) and is available with stable builds on demand with
  `"debugAdapter": "dlv-dap"` attribute in `launch.json` or `settings.json`!**
 
 Many features and settings described in this document may be available only with
@@ -444,7 +444,7 @@ Here is the list of attributes specific to Go debugging.
 | `args` | Command line arguments passed to the debugged program.<br/>(Default: `[]`)<br/> | <center>_n/a_</center> |
 | `asRoot` | (Experimental) Debug with elevated permissions (on Unix). It requires `integrated` or `external` console modes and is ignored in remote debugging.<br/>(Default: `false`)<br/> | (Experimental) Debug with elevated permissions (on Unix). This requires `integrated` or `external` console modes and is ignored in remote debugging.<br/>(Default: `false`)<br/> |
 | `backend` | Backend used by delve. Maps to `dlv`'s `--backend` flag.<br/><p>Allowed Values: `"default"`, `"native"`, `"lldb"`, `"rr"`<br/> | <center>_same as Launch_</center>|
-| `buildFlags` | Build flags, to be passed to the Go compiler. Maps to dlv's `--build-flags` flag.<br/>(Default: `""`)<br/> | <center>_n/a_</center> |
+| `buildFlags` | Build flags, to be passed to the Go compiler. Maps to dlv's `--build-flags` flag.<br/>(Default: `[]`)<br/> | <center>_n/a_</center> |
 | `console` | (Experimental) Where to launch the debugger and the debug target: internal console, integrated terminal, or external terminal. It is ignored in remote debugging.<br/><p>Allowed Values: `"internalConsole"`, `"integratedTerminal"`, `"externalTerminal"`<br/>(Default: `internalConsole`)<br/> | (Experimental) Where to launch the debugger: internal console, integrated terminal, or external terminal. This does not affect tty of the running program. It is ignored in remote debugging.<br/><p>Allowed Values: `"internalConsole"`, `"integratedTerminal"`, `"externalTerminal"`<br/>(Default: `internalConsole`)<br/> |
 | `coreFilePath` | Path to the core dump file to open. For use on 'core' mode only<br/>(Default: `""`)<br/> | <center>_n/a_</center> |
 | `cwd` | Workspace relative or absolute path to the working directory of the program being debugged if a non-empty value is specified. The `program` folder is used as the working directory if `cwd` is omitted or empty.<br/>(Default: `""`)<br/> | Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.<br/>(Default: `"${workspaceFolder}"`)<br/> |
@@ -460,14 +460,14 @@ Here is the list of attributes specific to Go debugging.
 | `output` | Output path for the binary of the debugee.<br/>(Default: `"debug"`)<br/> | <center>_n/a_</center> |
 | `port` | When applied to remote-attach configurations, will look for "dlv ... --headless --listen=<host>:<port>" server started externally. In dlv-dap mode this will apply to all other configurations as well. The extension will try to connect to an external server started with "dlv dap --listen=<host>:<port>" to ask it to launch/attach to the target process.<br/>(Default: `2345`)<br/> | When applied to remote-attach configurations, will look for "dlv ... --headless --listen=<host>:<port>" server started externally. In dlv-dap mode, this will apply to all other configurations as well. The extension will try to connect to an external server started with "dlv dap --listen=<host>:<port>" to ask it to launch/attach to the target process.<br/>(Default: `2345`)<br/> |
 | `processId` | <center>_n/a_</center> | <br/><p><b>Option 1:</b> Use process picker to select a process to attach, or Process ID as integer.<br/><p>Allowed Values: `"${command:pickProcess}"`, `"${command:pickGoProcess}"`<br/><br/><p><b>Option 2:</b> Attach to a process by name. If more than one process matches the name, use the process picker to select a process.<br/><br/><p><b>Option 3:</b> The numeric ID of the process to be debugged. If 0, use the process picker to select a process.<br/><br/>(Default: `0`)<br/> |
-| `program` | Path to the program folder (or any go file within that folder) when in `debug` or `test` mode, and to the pre-built binary file to debug in `exec` mode. If it is not an absolute path, the extension interpretes it as a workspace relative path.<br/>(Default: `"${workspaceFolder}"`)<br/> | <center>_n/a_</center> |
+| `program` | Path to the program folder (or any go file within that folder) when in `debug` or `test` mode, and to the pre-built binary file to debug in `exec` mode. If it is not an absolute path, the extension interprets it as a workspace relative path.<br/>(Default: `"${workspaceFolder}"`)<br/> | <center>_n/a_</center> |
 | `remotePath` | <center>_n/a_</center> | (Deprecated) *Use `substitutePath` instead.*<br/>The path to the source code on the remote machine, when the remote path is different from the local machine. If specified, becomes the first entry in substitutePath. Not supported with `dlv-dap`.<br/>(Default: `""`)<br/> |
 | `showGlobalVariables` | Boolean value to indicate whether global package variables should be shown in the variables pane or not.<br/>(Default: `false`)<br/> | <center>_same as Launch_</center>|
 | `showLog` | Show log output from the delve debugger. Maps to dlv's `--log` flag.<br/>(Default: `false`)<br/> | <center>_same as Launch_</center>|
 | `showRegisters` | Boolean value to indicate whether register variables should be shown in the variables pane or not.<br/>(Default: `false`)<br/> | <center>_same as Launch_</center>|
 | `stackTraceDepth` | Maximum depth of stack trace collected from Delve.<br/>(Default: `50`)<br/> | <center>_same as Launch_</center>|
 | `stopOnEntry` | Automatically stop program after launch.<br/>(Default: `false`)<br/> | Automatically stop program after attach.<br/>(Default: `false`)<br/> |
-| `substitutePath` | An array of mappings from a local path (editor) to the remote path (debugee). This setting is useful when working in a file system with symbolic links, running remote debugging, or debugging an executable compiled externally. The debug adapter will replace the local path with the remote path in all of the calls.<br/><p><br/><ul><li>`"from"`: The absolute local path to be replaced when passing paths to the debugger.<br/>(Default: `""`)<br/></li><li>`"to"`: The absolute remote path to be replaced when passing paths back to the client.<br/>(Default: `""`)<br/></li></ul><br/> | An array of mappings from a local path (editor) to the remote path (debugee). This setting is useful when working in a file system with symbolic links, running remote debugging, or debugging an executable compiled externally. The debug adapter will replace the local path with the remote path in all of the calls.  Overriden by `remotePath`.<br/><p><br/><ul><li>`"from"`: The absolute local path to be replaced when passing paths to the debugger.<br/>(Default: `""`)<br/></li><li>`"to"`: The absolute remote path to be replaced when passing paths back to the client.<br/>(Default: `""`)<br/></li></ul><br/> |
+| `substitutePath` | An array of mappings from a local path (editor) to the remote path (debugee). This setting is useful when working in a file system with symbolic links, running remote debugging, or debugging an executable compiled externally. The debug adapter will replace the local path with the remote path in all of the calls.<br/><p><br/><ul><li>`"from"`: The absolute local path to be replaced when passing paths to the debugger.<br/>(Default: `""`)<br/></li><li>`"to"`: The absolute remote path to be replaced when passing paths back to the client.<br/>(Default: `""`)<br/></li></ul><br/> | An array of mappings from a local path (editor) to the remote path (debugee). This setting is useful when working in a file system with symbolic links, running remote debugging, or debugging an executable compiled externally. The debug adapter will replace the local path with the remote path in all of the calls.  Overridden by `remotePath`.<br/><p><br/><ul><li>`"from"`: The absolute local path to be replaced when passing paths to the debugger.<br/>(Default: `""`)<br/></li><li>`"to"`: The absolute remote path to be replaced when passing paths back to the client.<br/>(Default: `""`)<br/></li></ul><br/> |
 | `trace` | Various levels of logging shown in the debug console & 'Go Debug' output channel. When using the `legacy` debug adapter, the logs will also be written to a file if it is set to a value other than `error`.<br/><p>Allowed Values: `"verbose"`, `"trace"`, `"log"`, `"info"`, `"warn"`, `"error"`<br/>(Default: `"error"`)<br/> | <center>_same as Launch_</center>|
 | `traceDirPath` | Directory in which the record trace is located or to be created for a new output trace. For use on 'replay' mode only<br/>(Default: `""`)<br/> | <center>_n/a_</center> |
 <!-- SETTINGS END -->
@@ -822,7 +822,7 @@ command-line options.
 We encourage you to give the newly added `"debugAdapter": "dlv-dap"` support a
 try and to
 [let us know of any issues](https://github.com/golang/vscode-go/issues/new). If
-you need to use the `legacy` mode, pleasse also see the
+you need to use the `legacy` mode, please also see the
 [legacy remote debugging](debugging-legacy.md#remote-debugging) documentation.
 
 For example, start external headless server:
@@ -1050,7 +1050,7 @@ in the module cache, vendored modules, and the standard library.
 ```
 
 Since rules are applied both from client to server and server to client,
-rules with an empty string will be applied to *all* paths that it sees, so even
+rules with an empty string will be applied to _all_ paths that it sees, so even
 dependencies will be mapped to `"/path/to/module"`.
 
 We plan to make this easier in the future. Progress can be tracked
@@ -1134,9 +1134,9 @@ package. Follow Delve project's
 to send PRs.
 
 Code for integration with the Go extension is mostly in
-[`src/goDebugFactory.ts`](https://github.com/golang/vscode-go/blob/master/src/goDebugFactory.ts)
+[`src/goDebugFactory.ts`](https://github.com/golang/vscode-go/blob/master/extension/src/goDebugFactory.ts)
 and tests are in
-[`test/integration/goDebug.test.ts`](https://github.com/golang/vscode-go/blob/master/test/integration/goDebug.test.ts).
+[`test/integration/goDebug.test.ts`](https://github.com/golang/vscode-go/blob/master/extension/test/integration/goDebug.test.ts).
 Please take a look at VS Code Go project's
 [contribution guideline](contributing.md) to learn about how to prepare a change
 and send it for review.

@@ -67,6 +67,10 @@ Runs all unit tests in the current file.
 
 Runs all unit tests in the package of the current file.
 
+### `Go: Toggle Hide System Goroutines`
+
+Toggles hiding the system goroutines from the active debug session call stack view.
+
 ### `Go Test: Refresh`
 
 Refresh a test in the test explorer. Only available as a context menu option in the test explorer.
@@ -135,9 +139,9 @@ Extract logs in the `gopls (server)` output channel to the editor.
 
 Open the welcome page for the Go extension.
 
-### `Go: Toggle gc details`
+### `Go: Toggle compiler optimization details`
 
-Toggle the display of compiler optimization choices
+Toggle the per-package flag that causes compiler optimization details to be reported as diagnostics
 
 ### `Go: Add Import`
 
@@ -170,10 +174,6 @@ Add tags configured in go.addTags setting to selected struct using gomodifytags
 ### `Go: Remove Tags From Struct Fields`
 
 Remove tags configured in go.removeTags setting from selected struct using gomodifytags
-
-### `Go: Fill struct`
-
-Fill a struct literal with default values
 
 ### `Go: Show All Commands...`
 
@@ -230,14 +230,6 @@ Cancels running tests.
 ### `Go: Apply Cover Profile`
 
 Applies existing cover profile.
-
-### `Go: Extract to function`
-
-Extract to function using godoctor.
-
-### `Go: Extract to variable`
-
-Extract to variable using godoctor.
 
 ### `Go: Restart Language Server`
 

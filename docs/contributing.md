@@ -2,7 +2,7 @@
 
 We welcome your contributions and thank you for working to improve the Go development experience in VS Code.
 
-This guide will explain the process of setting up your development environment to work on the VS Code Go extension, as well as the process of sending out your change for review. If you're interested in testing the master branch or pre-releases of the extension, please see the [Go Nightly documentation](nightly.md).
+This guide will explain the process of setting up your development environment to work on the VS Code Go extension, as well as the process of sending out your change for review.
 
 Our canonical Git repository is located at https://go.googlesource.com/vscode-go and https://github.com/golang/vscode-go is a mirror.
 
@@ -21,7 +21,7 @@ Our canonical Git repository is located at https://go.googlesource.com/vscode-go
 
 If you are interested in fixing a bug or contributing a feature, please [file an issue](https://github.com/golang/vscode-go/issues/new/choose) first. Wait for a project maintainer to respond before you spend time coding.
 
-If you wish to work on an existing issue, please add a comment saying so, as someone may already be working on it. A project maintainer may respond with advice on how to get started. If you're not sure which issues are available, search for issues with the [help wanted label](https://github.com/golang/vscode-go/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
+If you wish to work on an existing issue, please add a comment saying so, as someone may already be working on it. A project maintainer may respond with advice on how to get started. If you're not sure which issues are available, search for issues with the [help wanted label](https://github.com/golang/vscode-go/labels/HelpWanted).
 
 ### Ask for help
 
@@ -38,7 +38,7 @@ For extending the language features or fixing bugs, please follow `gopls`'s
 
 ### Debug Adapter (`dlv dap`)
 
-Debugging features are implemented by Delve (`dlv`) and its native DAP implementation 
+Debugging features are implemented by Delve (`dlv`) and its native DAP implementation
 ([`dlv dap`](https://github.com/go-delve/delve/blob/master/Documentation/api/dap/README.md)).
 
 * goDebugConfiguration.ts: where launch configuration massaging occurs.
@@ -58,14 +58,14 @@ The debugging feature documentation has a dedicated section for tips for develop
 
     ```bash
     git clone https://go.googlesource.com/vscode-go
-    cd vscode-go
+    cd vscode-go/extension
     npm ci
     code .
     ```
 
 #### Lint
 
-You can run `npm run lint` on the command-line to check for lint errors in your program. You can also use the [TSLint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin) plugin to see errors as you code.
+You can run `npm run lint` on the command-line to check for lint errors in your program. You can also use the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) plugin to see errors as you code.
 
 ### Run
 
@@ -79,10 +79,8 @@ If you make subsequent edits in the codebase, you can reload (`Ctrl+R` or `⌘+R
 
 ## Test
 
-**note**: Unfortunately, VS Code test framework inherits your user settings when running tests [Issue 43](https://github.com/golang/vscode-go/issues/43). Make sure VS Code user settings do not contain any go related configuration, except `go.gopath` or `go.toolsGopath` in case you installed the tools for testing in a different `GOPATH`.
-
-
 1. `export GOPATH=/path/to/gopath/for/test`
+2. `cd extension` -- most extension development work is done in the `extension` directory.
 2. `go run tools/installtools/main.go` -- this will install all tools in the `GOPATH/bin` built from master/main.
 3. There are currently two different types of tests in this repo:
   - `npm run unit-test`: this runs unit tests defined in `test/unit`. They are light-weight tests that don't require `vscode` APIs.
@@ -98,7 +96,7 @@ When running them from terminal:
   - Option 1: Utilize `MOCHA_GREP` environment variable. That is equivalent with [`mocha --grep` flag](https://mochajs.org/#command-line-usage) that runs tests matching the given string or regexp. E.g. `MOCHA_GREP=gopls npm run test` which runs all integration tests whose suite/test names contain `"gopls"`.
   - Option 2: modify the test source code and set the [`only`](https://mochajs.org/#exclusive-tests) or [`skip`](https://mochajs.org/#inclusive-tests) depending on your need. If necessary, you can also modify `test/integration/index.ts` or `test/gopls/index.ts` to include only the test files you want to focus on. Make sure to revert them before sending the changes for review.
 
-#### (2) Debugging tests from VS Code: 
+#### (2) Debugging tests from VS Code:
 `.vscode/launch.json` defines test launch configurations. To run the tests locally, open the Run view (`Ctrl+Shift+D`), select the relevant launch configuration, and hit the Play button (`F5`). Output and results of the tests, including any logging written with `console.log` will appear in the `DEBUG CONSOLE` tab.
 You can supply environment variables (e.g. `MOCHA_GREP`) by modifying the launch configuration entry's `env` property.
   - `Launch Unit Tests`: runs unit tests in `test/unit` (same as `npm run unit-test`)
@@ -107,10 +105,7 @@ You can supply environment variables (e.g. `MOCHA_GREP`) by modifying the launch
 
 When you want to filter tests while debugging, utilize the `MOCAH_GREP` environment variable discussed previously - i.e., set the environment variable in the `env` property of the launch configuration.
 
-#### (3) Another way to run all tests:
-`build/all.bash test` is the script used by a CI (Linux).
-
-#### (4) Using different versions of tools.
+#### (3) Using different versions of tools.
 The tests will pick tools found from `GOPATH/bin` first. So, install the versions you want there.
 
 ## Running/Debugging the Extension
@@ -125,7 +120,7 @@ When developing features in `gopls`, you may need to attach a debugger to `gopls
 
 1. Start a gopls in deamon mode:
 ```
-gopls -listen=:37374" -logfile=auto -debug=:0 serve
+gopls -listen=:37374 -logfile=auto -debug=:0 serve
 ```
 
 Or, if you use vscode for gopls development, you can configure `launch.json` of the `x/tools/gopls` project:
@@ -156,10 +151,9 @@ Or, if you use vscode for gopls development, you can configure `launch.json` of 
 
 After making changes to the extension, you may want to test it end-to-end instead of running it in debug mode. To do this, you can sideload the extension.
 
-1. Install the [vsce](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#vsce) tool for packaging extensions (`npm install -g vsce`).
-2. `cd` into your `vscode-go` directory.
+1. `cd` into the `extension` directory.
 3. Install all dependencies by running `npm ci`.
-4. Run `vsce package`. This will generate a file with a `.vsix` extension in your current directory.
+4. Run `npx vsce package`. This will generate a file with a `.vsix` extension in your current directory.
 
     ```bash
     npm install -g vsce
@@ -189,15 +183,12 @@ Once you've sent out your change, a maintainer will take a look at your contribu
 ### Presubmit Test in CI
 
 When you mail your CL or upload a new patch to an existing CL, *AND*
-you or a fellow contributor assigns the `Run-TryBot=+1` label in Gerrit, the test command defined in 
+you or a fellow contributor assigns the `Run-TryBot=+1` label in Gerrit, the test command defined in
 `build/all.bash` will run by `Kokoro`, which is Jenkins-like Google infrastructure
 for running Dockerized tests. `Kokoro` will post the result as a comment, and add its `TryBot-Result`
 vote after each test run completes.
 
-To force a re-run of the Kokoro CI,
-  * Remove `TryBot-Result` vote (hover over the label, and click the trashcan icon).
-  * Reply in Gerrit with the comment "kokoro rerun". Make sure to keep the `Run-TryBot` +1 vote.
-
+To force a re-run of the Kokoro CI, add comment `kokoro rerun` to the CL.
 
 [#vscode-dev]: https://gophers.slack.com/archives/CUWGEKH5Z
 [Gophers Slack]: https://invite.slack.golangbridge.org/

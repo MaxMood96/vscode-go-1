@@ -8,16 +8,10 @@
 provides rich language support for the
 [Go programming language](https://go.dev/).
 
-📣
-[Remote attach debugging](https://github.com/golang/vscode-go/wiki/debugging#connecting-to-headless-delve-with-target-specified-at-server-start-up) is now available via Delve's native DAP implementation with Delve v1.7.3 or newer. It enchances remote debugging with the same
-[debugging features](https://github.com/golang/vscode-go/wiki/debugging) that are already in use for local debugging. It is now the default with the
-[Go Nightly](https://github.com/golang/vscode-go/wiki/nightly) build of the extension and will become the default for the stable releases in mid 2022.
-We recommend switching your remote attach configurations in `launch.json` to use
-`"debugAdapter":"dlv-dap"` now to verify that this works for you.
-Please [file a new issue](https://github.com/golang/vscode-go/issues/new/choose) if you encounter any problems.
+## Requirements
 
-📣📣 Watch [Debugging Treasure Hunt](https://youtu.be/ZPIPPRjwg7Q) from [GopherCon 2021](https://www.gophercon.com/) for a fun take on a debugging demo with VS Code Go and Delve DAP.
-
+* Visual Studio Code 1.75 or newer (or editors compatible with VS Code 1.75+ APIs)
+* Go 1.21 or newer.
 
 ## Quick Start
 
@@ -25,25 +19,21 @@ Welcome! 👋🏻<br/>
 Whether you are new to Go or an experienced Go developer, we hope this
 extension fits your needs and enhances your development experience.
 
-1.  Install [Go](https://go.dev) 1.18 or newer if you haven't already.
+1.  Install [Go](https://go.dev) 1.21 or newer if you haven't already.
 
 1.  Install the [VS Code Go extension].
 
-1.  Open any directory or workspace containing Go code to automatically activate
-    the extension. The
+1.  Open any Go file or go.mod file to automatically activate the extension. The
     [Go status bar](https://github.com/golang/vscode-go/wiki/ui) appears in the
-    bottom left corner of the window and displays your Go version.
+    bottom right corner of the window and displays your Go version.
 
-1.  The extension depends on `go`, `gopls`, `dlv` and other optional tools. If
-    any of the dependencies are missing, the ⚠️ `Analysis Tools Missing` warning
-    is displayed. Click on the warning to download dependencies.
-
-    See the
-    [tools documentation](https://github.com/golang/vscode-go/wiki/tools) for a
-    complete list of tools the extension depends on.
+1.  The extension depends on `go`, `gopls` (the Go language server), and optional
+    tools depending on your settings. If `gopls` is missing, the extension will
+    try to install it. The :zap: sign next to the Go version indicates
+    the language server is running, and you are ready to go.
 
 <p align="center">
-<img src="docs/images/installtools.gif" width=75%>
+<img src="docs/images/gettingstarted.gif" width=75%>
 <br/>
 <em>(Install Missing Tools)</em>
 </p>
@@ -58,7 +48,8 @@ You are ready to Go :-) &nbsp;&nbsp; 🎉🎉🎉
 	and [advanced topics](https://github.com/golang/vscode-go/wiki/advanced) to
 	customize the extension.
 * View the [tools documentation](https://github.com/golang/vscode-go/wiki/tools)
-  for a complete list of tools the VS Code Go extension depends on.
+  for a complete list of tools the VS Code Go extension depends on. You can
+  install additional tools and update them by using "Go: Install/Update Tools".
 * Solve issues with the
   [general troubleshooting](https://github.com/golang/vscode-go/wiki/troubleshooting)
 	and [debugging troubleshooting](https://github.com/golang/vscode-go/wiki/debugging#troubleshooting)
@@ -104,7 +95,7 @@ extension.
 <br/><em>(Toggle Test File)</em></p>
 
 **⚠️ Note**: the default syntax highlighting for Go files is provided by a
-[TextMate rule](https://github.com/jeff-hykin/better-go-syntax) embedded in VS
+[TextMate rule](https://github.com/worlpaker/go-syntax) embedded in VS
 Code, not by this extension.
 
 For better syntax highlighting, we recommend enabling
@@ -134,11 +125,86 @@ modules or uncommon project layouts, you will need to configure your workspace
 by using [Workspace Folders]. See the
 [Supported workspace layouts documentation] for more information.
 
-## Preview version
+## Pre-release version
 
 If you'd like to get early access to new features and bug fixes, you can use the
-nightly build of this extension. Learn how to install it in by reading the
-[Go Nightly documentation](https://github.com/golang/vscode-go/wiki/nightly).
+pre-release extension. Following the vscode's [convention](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions),
+we use the minor version of the extension version number to distinguish stable
+and pre-release versions (`0.ODD_NUMBER.patch` for pre-release, `0.EVEN_NUMBER.patch`
+for stable release).
+
+To install the pre-release version, use the drop-down list
+to select "Install Pre-Release Version", or if already installed the Go extension,
+use the "Switch to Pre-Release Version" option in the Visual Studio Code
+extension management page. For more details about this mechanism, see the
+[Visual Studio Code's documentation](https://code.visualstudio.com/updates/v1_63#_pre-release-extensions).
+
+## Telemetry
+
+VS Code Go extension relies on the [Go Telemetry](https://go.dev/doc/telemetry) to
+learn insights about the performance and stability of the extension and the
+language server (`gopls`).
+**Go Telemetry data uploading is disabled by default** and can be enabled
+with the following command:
+
+```
+go run golang.org/x/telemetry/cmd/gotelemetry@latest on
+```
+
+After telemetry is enabled, the language server will upload metrics and stack
+traces to [telemetry.go.dev](https://telemetry.go.dev). You can inspect what
+data is collected and can be uploaded by running:
+
+```
+go run golang.org/x/telemetry/cmd/gotelemetry@latest view
+```
+
+If we get enough adoption, this data can significantly advance the pace of
+the Go extension development, and help us meet a higher standard
+of reliability. For example:
+
+- Even with [semi-automated crash
+  reports](https://github.com/golang/vscode-go/issues?q=is%3Aissue+is%3Aopen+label%3AautomatedReport)
+  in VS Code, we've seen several crashers go unreported for weeks or months.
+- Even with [a suite of
+  benchmarks](https://perf.golang.org/dashboard/?benchmark=all&repository=tools&branch=release-branch.go1.20),
+  some performance regressions don't show up in our benchmark environment (such
+  as the [completion bug](https://go.dev/issue/62665) mentioned below!).
+- Even with [lots of great
+  ideas](https://github.com/golang/go/issues?q=is%3Aissue+is%3Aopen+label%3Agopls+label%3Afeaturerequest)
+  for how to improve gopls, we have limited resources. Telemetry can help us
+  identify which new features are most important, and which existing features
+  aren't being used or aren't working well.
+
+These are just a few ways that telemetry can improve gopls. The [telemetry blog
+post series](https://research.swtch.com/telemetry-uses) contains many more.
+
+Go telemetry is designed to be transparent and privacy-preserving. Learn more at
+[https://go.dev/doc/telemetry](https://go.dev/doc/telemetry).
+
+## Support Policy
+
+The Go extension is maintained by engineers on the
+[Go tools team](https://github.com/orgs/golang/teams/tools-team/members),
+who actively monitor the [VS Code Go](https://github.com/golang/vscode-go/issues)
+and the [Go](https://github.com/golang/go/issues?q=is%3Aissue+is%3Aopen+label%3Agopls)
+issue trackers.
+
+We support only the latest stable and pre-release versions of the extension.
+
+### Supported Go and tools
+
+The Go extension follows the [Go Release Policy](https://go.dev/doc/devel/release.html#policy),
+meaning that it _officially_ supports the two most recent major Go releases.
+The Go team maintains _best-effort_ support for the last three major Go versions.
+
+The Go extension relies on [tools](https://github.com/golang/vscode-go/wiki/tools)
+like `gopls` and `dlv` for its core functionalities and they have their own release
+policy and schedule. We test only against the latest versions of these tools.
+
+In case you need to work with an older version of Go, please check
+the [Compatibility] page and manually install the compatible version of
+the extension and tools.
 
 ## Contributing
 
@@ -169,6 +235,7 @@ conduct-related issue, please mail conduct@golang.org.
 [IntelliSense]: https://github.com/golang/vscode-go/wiki/features#intellisense
 [Code navigation]: https://github.com/golang/vscode-go/wiki/features#code-navigation
 [Code editing]: https://github.com/golang/vscode-go/wiki/features#code-editing
+[Compatibility]: https://github.com/golang/vscode-go/wiki/compatibility
 [diagnostics]: https://github.com/golang/vscode-go/wiki/features#diagnostics
 [testing]: https://github.com/golang/vscode-go/wiki/features#run-and-test-in-the-editor
 [debugging]: https://github.com/golang/vscode-go/wiki/debugging#features
